@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
-
+//Francisco Astudillo Intento numero 3 :D
 const int filas = 6;
 const int columnas = 7;
 const int NumJugador = 2;
@@ -38,23 +38,23 @@ struct NodoTablero
 
 //Funciones wonitas por favor funcionen no me fallen esta vez q ya llevo como 3 intentos
 int Minimax(NodoTablero* nodo, int jugador, int profundidad, int alfa, int beta);
-int evalua_jugada(int tablero[filas][columnas], int jugador);
-pair<int, int> comprueba_linea(int tablero[filas][columnas], int n, int jugador);
-bool game_over(int tablero[filas][columnas], int jugador);
+int JugadaOptima(int tablero[filas][columnas], int jugador);
+pair<int, int> VerificarLinea(int tablero[filas][columnas], int n, int jugador);
+bool TerminoJuego(int tablero[filas][columnas], int jugador);
 void PrintearTablero(int tablero[filas][columnas]);
 bool Movimiento(int tablero[filas][columnas], int columna, int jugador);
 int TurnoHumano(int tablero[filas][columnas]);
 int TurnoIA(int tablero[filas][columnas], int dificultad);
 void HacerHijos(NodoTablero* nodo, int jugador);
-void guardar_partida(int tablero[filas][columnas], int jugador, int dificultad);
-bool cargar_partida(int tablero[filas][columnas], int& jugador, int& dificultad);
-void ver_partidas_guardadas();
+void GuardarPartida(int tablero[filas][columnas], int jugador, int dificultad);
+bool CargarPartida(int tablero[filas][columnas], int& jugador, int& dificultad);
+void PartidasGuardadas();
 
 int Minimax(NodoTablero* nodo, int jugador, int profundidad, int alfa, int beta) {
-    if (game_over(nodo->tablero, jugador) || profundidad == 0) {
-        return evalua_jugada(nodo->tablero, jugador);
+    if (TerminoJuego(nodo->tablero, jugador) || profundidad == 0) {
+        return JugadaOptima(nodo->tablero, jugador);
     }
-
+    //Minimax con alfa, beta para ir viendo las rutas optimas
     HacerHijos(nodo, jugador);
 
     int max_puntuacion = INT_MIN;
@@ -80,17 +80,18 @@ int Minimax(NodoTablero* nodo, int jugador, int profundidad, int alfa, int beta)
     return max_puntuacion;
 }
 
-int evalua_jugada(int tablero[filas][columnas], int jugador) 
+int JugadaOptima(int tablero[filas][columnas], int jugador) 
 {
-    auto n2 = comprueba_linea(tablero, 2, jugador).second;
-    auto n3 = comprueba_linea(tablero, 3, jugador).second;
-    auto n4 = comprueba_linea(tablero, 4, jugador).second;
+    auto n2 = VerificarLinea(tablero, 2, jugador).second;
+    auto n3 = VerificarLinea(tablero, 3, jugador).second;
+    auto n4 = VerificarLinea(tablero, 4, jugador).second;
 
     int valor_jugada = 4 * n2 + 9 * n3 + 1000 * n4;
     return valor_jugada;
 }
-pair<int, int> comprueba_linea(int tablero[filas][columnas], int n, int jugador) 
+pair<int, int> VerificarLinea(int tablero[filas][columnas], int n, int jugador) 
 {
+        //Ver si el movimiento de la linea se puede realizar
     int ganador = 0;
     int num_lineas = 0;
     int lineas_posibles = 8 - n;
@@ -157,12 +158,13 @@ pair<int, int> comprueba_linea(int tablero[filas][columnas], int n, int jugador)
     return make_pair(ganador, num_lineas);
 }
 
-bool game_over(int tablero[filas][columnas], int jugador) {
-    auto ganador_info = comprueba_linea(tablero, 4, jugador);
+bool TerminoJuego(int tablero[filas][columnas], int jugador) {
+    auto ganador_info = VerificarLinea(tablero, 4, jugador);
 
     int ganador = ganador_info.first;
 
-    if (ganador != 0) {
+    if (ganador != 0) 
+    {
         return true;
     }
 
@@ -179,6 +181,19 @@ bool game_over(int tablero[filas][columnas], int jugador) {
     return true;
 }
 
+void mostrarTablero(int tablero[filas][columnas])
+{
+    //Printea el tablero solito
+    for(int i = 0; i < filas; i++){
+        cout << "|";
+        for(int j = 0; j < columnas; j++){
+            cout<<tablero[i][j];
+            cout << "|";
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+}
 
 void PrintearTablero(int tablero[filas][columnas])
 {
@@ -189,13 +204,17 @@ void PrintearTablero(int tablero[filas][columnas])
                 {
                         cout<<"[ ] ";
                 }
-                if(tablero[i][j] = 1)
+                else if(tablero[i][j] = 1)
                 {
                         cout<<"X ";
                 }
-                if(tablero[i][j] = 2)
+                else if(tablero[i][j] = 2)
                 {
                        cout<<"O ";
+                }
+                else
+                {
+                    
                 }
             }
             cout<<endl;
@@ -227,7 +246,7 @@ int TurnoHumano(int tablero[filas][columnas])
         cin >> col;
 
         if (col == -1) {
-            guardar_partida(tablero, NumJugador, 0);
+            GuardarPartida(tablero, NumJugador, 0);
             cout << "Partida guardada exitosamente. Volviendo al menú principal." << endl;
             return col;
         } else if (col == 0 || col < 1 || col > columnas || !Movimiento(tablero, col - 1, NumJugador)) {
@@ -243,38 +262,35 @@ int TurnoIA(int tablero[filas][columnas], int dificultad) {
     srand(time(nullptr));
 
     int col;
-
-    switch (dificultad) {
-        case 1: // Fácil
-            // En fácil, la IA realiza movimientos aleatorios sin mucha estrategia
-            do 
-            {
-                col = rand() % columnas;
-            } while (tablero[0][col] != 0);
+    //modo facil
+    if(dificultad == 1)
+    {
+        col = rand() % columnas;
+        while (tablero[0][col] != 0);
 
             Movimiento(tablero, col, NumIA);
             return col;
-
-        case 2: // Medio
-            // En medio, la IA realiza movimientos aleatorios, pero a veces bloquea jugadas del oponente
-            col = rand() % columnas;
+    }
+    if(dificultad == 2)
+    {
+        col = rand() % columnas;
             if (tablero[0][col] == 0) 
             {
                 Movimiento(tablero, col, NumIA);
                 return col;
             }
-            break;
-
-        case 3: // Difícil
-            // En difícil, la IA utiliza el algoritmo Minimax para tomar decisiones
-            NodoTablero* nodo = new NodoTablero(0);
+    }
+    if(dificultad == 3)
+    {
+        NodoTablero* nodo = new NodoTablero(0);
             nodo->valor = INT_MIN;
 
             for (int i = 0; i < columnas; ++i) 
             {
-                if (tablero[0][i] == 0) {
+                if (tablero[0][i] == 0) 
+                {
                     NodoTablero* hijo = new NodoTablero(i);
-                    hijo->valor = evalua_jugada(tablero, NumIA);
+                    hijo->valor = JugadaOptima(tablero, NumIA);
                     Movimiento(hijo->tablero, i, NumIA);
                     nodo->hijos.push_back(hijo);
                 }
@@ -283,7 +299,8 @@ int TurnoIA(int tablero[filas][columnas], int dificultad) {
             for (auto hijo : nodo->hijos) 
             {
                 int puntuacion = -Minimax(hijo, NumIA, 3, INT_MIN, INT_MAX);
-                if (puntuacion > nodo->valor) {
+                if (puntuacion > nodo->valor) 
+                {
                     nodo->valor = puntuacion;
                     col = hijo->columna;
                 }
@@ -305,13 +322,13 @@ void HacerHijos(NodoTablero* nodo, int jugador)
         if (nodo->tablero[0][col] == 0) {
             NodoTablero* hijo = new NodoTablero(col);
             Movimiento(hijo->tablero, col, jugador);
-            hijo->valor = evalua_jugada(hijo->tablero, jugador);
+            hijo->valor = JugadaOptima(hijo->tablero, jugador);
             nodo->hijos.push_back(hijo);
         }
     }
 }
 
-void guardar_partida(int tablero[filas][columnas], int jugador, int dificultad) {
+void GuardarPartida(int tablero[filas][columnas], int jugador, int dificultad) {
     ofstream archivo("partida_guardada.txt");
 
     if (archivo.is_open()) {
@@ -330,7 +347,7 @@ void guardar_partida(int tablero[filas][columnas], int jugador, int dificultad) 
         cout << "No se pudo abrir el archivo para guardar la partida." << endl;
     }
 }
-bool cargar_partida(int tablero[filas][columnas], int& jugador, int& dificultad) {
+bool CargarPartida(int tablero[filas][columnas], int& jugador, int& dificultad) {
         ifstream archivo("partida_guardada.txt");
 
     if (archivo.is_open()) {
@@ -349,7 +366,7 @@ bool cargar_partida(int tablero[filas][columnas], int& jugador, int& dificultad)
         return false;
     }
 }
-void ver_partidas_guardadas() {
+void PartidasGuardadas() {
     ifstream archivo("partida_guardada.txt");
 
     if (archivo.is_open()) {
@@ -367,11 +384,12 @@ void ver_partidas_guardadas() {
 int main()
 {
     int tablero[filas][columnas] = {{0}};
-    
+
     int jugador = NumJugador;
     int IA = NumIA;
     int dificultad;
     string ganador = "flop";
+
     while(true)
     {
         cout << "Bienvenido al Menu del ConectaCuatro mas fome :D " << endl;
@@ -383,7 +401,7 @@ int main()
 		int opcion; 
         cin >> opcion;
 
-        auto ganador_info = comprueba_linea(tablero, 4, jugador);
+        auto ganador_info = VerificarLinea(tablero, 4, jugador);
         int g = ganador_info.first;
 
         
@@ -414,25 +432,26 @@ int main()
                     }
                 }
 
-                    // Dentro del bucle principal donde juegan el humano y la IA
+                    // Pelea IA VS Humano
                 while (true) 
                 {
-                    PrintearTablero(tablero);
+                    mostrarTablero(tablero);
                
                     // Turno del jugador humano
                     int col = TurnoHumano(tablero);
                
                     if (col == -1) 
                     {
-                        guardar_partida(tablero, jugador, dificultad);
+                        GuardarPartida(tablero, jugador, dificultad);
                         //salir = true;
                         break;
                     }
 
                     // Verificar si el jugador humano ha ganado después de su movimiento
-                    ganador_info = comprueba_linea(tablero, 4, NumJugador);
+                    ganador_info = VerificarLinea(tablero, 4, NumJugador);
                     g = ganador_info.first;
-                    if (g != 0) {
+                    if (g != 0) 
+                    {
                         ganador = "Jugador";
                         break;
                     }
@@ -442,7 +461,7 @@ int main()
                     Movimiento(tablero, movIA, NumIA);
                
                     // Verificar si la IA ha ganado después de su movimiento
-                    ganador_info = comprueba_linea(tablero, 4, NumIA);
+                    ganador_info = VerificarLinea(tablero, 4, NumIA);
                     g = ganador_info.first;
                     if (g != 0) 
                     {
@@ -450,16 +469,16 @@ int main()
                         break;
                     }
                
-                    if (game_over(tablero, NumJugador)) 
+                    if (TerminoJuego(tablero, NumJugador)) 
                     {
                         break;
                     }
-                      }
-               
+                }
+                    //PROBLEMA ANTES DE AKI
                     PrintearTablero(tablero);
 
 
-                  ganador_info = comprueba_linea(tablero, 4, jugador);
+                  ganador_info = VerificarLinea(tablero, 4, jugador);
                  g = ganador_info.first;
 
                    if (g == jugador) 
@@ -481,7 +500,7 @@ int main()
 		else if(opcion == 2)
         {
             // Cargar partida
-                if (cargar_partida(tablero, jugador, dificultad)) 
+                if (CargarPartida(tablero, jugador, dificultad)) 
                 {
                     cout << "Partida cargada exitosamente." << endl;
                 } else {
@@ -492,7 +511,7 @@ int main()
         else if(opcion == 3)
         {
            // Ver partidas guardadas
-                ver_partidas_guardadas();
+                PartidasGuardadas();
                 break;
         }
 		else if(opcion == 4){
