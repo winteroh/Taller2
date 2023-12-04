@@ -464,7 +464,7 @@ int main()
 
                      // Turno de la IA
                     int movIA = TurnoIA(tablero, dificultad);
-                    Movimiento(tablero, movIA, NumIA);
+                    //Movimiento(tablero, movIA, NumIA);
                     // Verificar si la IA ha ganado después de su movimiento
                     ganador_info = VerificarLinea(tablero, 4, NumIA);
                     g = ganador_info.first;
