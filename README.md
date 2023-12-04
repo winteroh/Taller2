@@ -1,4 +1,5 @@
 # Taller2
+*PARA EJECUTAR ES ./MAIN2* (Porque tuve que usar otro main)
 Hola Profesor D: Espero teniendo un buen dia
 Mis decision de diseño fueron bastante simples, ya que me enfoque mas en el analisis de minimax, ya que era una nueva logica que estabamos trabajando donde el tablero se muestra de esta forma (Donde 2 vendria a ser el jugador, mientras que el 1 la IA)
 1) |0|0|0|0|0|0|0|  
