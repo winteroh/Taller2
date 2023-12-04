@@ -14,6 +14,7 @@ const int NumIA = 1;
 
 using namespace std;
 
+//creacion del nodo para poder a empezar a hacer el arbolito y too eso
 struct NodoTablero 
 {
     int tablero[filas][columnas];
@@ -55,6 +56,7 @@ int Minimax(NodoTablero* nodo, int jugador, int profundidad, int alfa, int beta)
         return JugadaOptima(nodo->tablero, jugador);
     }
     //Minimax con alfa, beta para ir viendo las rutas optimas
+    //Fue lo mas dificil de usar :(( cuesta demasiado))
     HacerHijos(nodo, jugador);
 
     int max_puntuacion = INT_MIN;
@@ -168,7 +170,7 @@ bool TerminoJuego(int tablero[filas][columnas], int jugador) {
         return true;
     }
 
-    // Verificar si el tablero está lleno
+    // Verificar si el tablero está lleno para finalizar
     for (int i = 0; i < filas; ++i) 
     {
         for (int j = 0; j < columnas; ++j) {
@@ -242,14 +244,15 @@ int TurnoHumano(int tablero[filas][columnas])
 
     while (!movimiento_valido) 
     {
-        cout << "Columna (0 para salir, -1 para guardar): ";
+        cout << "Ingresa Columna donde va su ficha (-1 para guardar): ";
         cin >> col;
-
-        if (col == -1) {
+        //Para verificar si el movimiento de la columna es valido
+        if (col == -1) 
+        {
             GuardarPartida(tablero, NumJugador, 0);
             cout << "Partida guardada exitosamente. Volviendo al menú principal." << endl;
             return col;
-        } else if (col == 0 || col < 1 || col > columnas || !Movimiento(tablero, col - 1, NumJugador)) {
+        } else if (col < 1 || col > columnas || !Movimiento(tablero, col - 1, NumJugador)) {
             cout << "Movimiento ilegal. Intente de nuevo." << endl;
         } else {
             movimiento_valido = true;
@@ -271,6 +274,7 @@ int TurnoIA(int tablero[filas][columnas], int dificultad) {
             Movimiento(tablero, col, NumIA);
             return col;
     }
+    //modo medio
     if(dificultad == 2)
     {
         col = rand() % columnas;
@@ -281,6 +285,7 @@ int TurnoIA(int tablero[filas][columnas], int dificultad) {
             }
     }
     if(dificultad == 3)
+    //modo dificil 
     {
         NodoTablero* nodo = new NodoTablero(0);
             nodo->valor = INT_MIN;
@@ -347,7 +352,8 @@ void GuardarPartida(int tablero[filas][columnas], int jugador, int dificultad) {
         cout << "No se pudo abrir el archivo para guardar la partida." << endl;
     }
 }
-bool CargarPartida(int tablero[filas][columnas], int& jugador, int& dificultad) {
+bool CargarPartida(int tablero[filas][columnas], int& jugador, int& dificultad) 
+{
         ifstream archivo("partida_guardada.txt");
 
     if (archivo.is_open()) {
@@ -394,7 +400,7 @@ int main()
     {
         cout << "Bienvenido al Menu del ConectaCuatro mas fome :D " << endl;
 		cout << "1) Jugar vs IA" << endl;
-		cout << "2) Ver Puntos." << endl;
+		cout << "2) Cargar partida" << endl;
         cout << "3) Partidas guardadas" << endl;
 		cout << "4) Salir" << endl;
 
@@ -478,8 +484,8 @@ int main()
                     PrintearTablero(tablero);
 
 
-                  ganador_info = VerificarLinea(tablero, 4, jugador);
-                 g = ganador_info.first;
+                     ganador_info = VerificarLinea(tablero, 4, jugador);
+                    g = ganador_info.first;
 
                    if (g == jugador) 
                    {
@@ -503,7 +509,8 @@ int main()
                 if (CargarPartida(tablero, jugador, dificultad)) 
                 {
                     cout << "Partida cargada exitosamente." << endl;
-                } else {
+                } else 
+                {
                     cout << "No hay partidas guardadas o no se pudo cargar la partida." << endl;
                 }
                 break;
