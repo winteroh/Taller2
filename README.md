@@ -10,6 +10,7 @@ Mis decision de diseño fueron bastante simples, ya que me enfoque mas en el ana
 7) |0|2|0|0|0|1|0|
 
 El menu se muestra asi:
+
 Bienvenido al Menu del ConectaCuatro mas fome :D 
 1) Jugar vs IA
 2) Cargar partida
