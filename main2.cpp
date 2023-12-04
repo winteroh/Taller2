@@ -276,7 +276,7 @@ int TurnoIA(int tablero[filas][columnas], int dificultad) {
     }
     //modo medio
     if(dificultad == 2)
-    {
+    {   
         col = rand() % columnas;
             if (tablero[0][col] == 0) 
             {
@@ -360,7 +360,8 @@ bool CargarPartida(int tablero[filas][columnas], int& jugador, int& dificultad)
         archivo >> jugador >> dificultad;
 
         for (int i = 0; i < filas; ++i) {
-            for (int j = 0; j < columnas; ++j) {
+            for (int j = 0; j < columnas; ++j) 
+            {
                 archivo >> tablero[i][j];
             }
         }
@@ -428,7 +429,7 @@ int main()
 
                 // Reiniciar variables relacionadas con la partida
                 jugador = NumJugador;
-                ganador = "Tablas";
+                ganador = "Empate";
                 // Reiniciar el tablero
                 for (int i = 0; i < filas; i++) 
                 {
@@ -449,7 +450,6 @@ int main()
                     if (col == -1) 
                     {
                         GuardarPartida(tablero, jugador, dificultad);
-                        //salir = true;
                         break;
                     }
 
@@ -465,7 +465,6 @@ int main()
                      // Turno de la IA
                     int movIA = TurnoIA(tablero, dificultad);
                     Movimiento(tablero, movIA, NumIA);
-               
                     // Verificar si la IA ha ganado después de su movimiento
                     ganador_info = VerificarLinea(tablero, 4, NumIA);
                     g = ganador_info.first;
@@ -481,23 +480,24 @@ int main()
                     }
                 }
                     //PROBLEMA ANTES DE AKI
+                    //Me pone 2 fichas a la vez
                     PrintearTablero(tablero);
 
 
                      ganador_info = VerificarLinea(tablero, 4, jugador);
-                    g = ganador_info.first;
+                        g = ganador_info.first;
 
                    if (g == jugador) 
-                   {
+                    {
                     ganador = "Jugador";
                     } 
                     else if (g == NumJugador) 
                     {
-                    ganador = "Ordenador";
+                    ganador = "IA";
                     } 
                     else 
                     {
-                    ganador = "Tablas";
+                    ganador = "Empate";
                     }
 
                  cout << "Ganador: " << ganador << endl;
@@ -509,11 +509,12 @@ int main()
                 if (CargarPartida(tablero, jugador, dificultad)) 
                 {
                     cout << "Partida cargada exitosamente." << endl;
+                    //Llamar a funcion pelea vs IA
                 } else 
                 {
                     cout << "No hay partidas guardadas o no se pudo cargar la partida." << endl;
                 }
-                break;
+                //break;
 		} 
         else if(opcion == 3)
         {
