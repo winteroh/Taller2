@@ -250,7 +250,7 @@ int TurnoHumano(int tablero[filas][columnas])
         if (col == -1) 
         {
             GuardarPartida(tablero, NumJugador, 0);
-            cout << "Partida guardada exitosamente. Volviendo al menú principal." << endl;
+            cout << "Partida guardada exitosamente." << endl;
             return col;
         } else if (col < 1 || col > columnas || !Movimiento(tablero, col - 1, NumJugador)) {
             cout << "Movimiento ilegal. Intente de nuevo." << endl;
@@ -464,7 +464,6 @@ int main()
 
                      // Turno de la IA
                     int movIA = TurnoIA(tablero, dificultad);
-                    //Movimiento(tablero, movIA, NumIA);
                     // Verificar si la IA ha ganado después de su movimiento
                     ganador_info = VerificarLinea(tablero, 4, NumIA);
                     g = ganador_info.first;
@@ -479,8 +478,6 @@ int main()
                         break;
                     }
                 }
-                    //PROBLEMA ANTES DE AKI
-                    //Me pone 2 fichas a la vez
                     PrintearTablero(tablero);
 
 
@@ -525,7 +522,8 @@ int main()
 		else if(opcion == 4){
 			cout << "chao chao" << endl;
 			break;
-		} else 
+		} 
+        else 
         {
 			cout << "Opcion invalida" << endl;
 		}
